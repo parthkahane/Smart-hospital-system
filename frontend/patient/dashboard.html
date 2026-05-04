@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard - SmartCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg dashboard-nav fixed-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand dashboard-brand" href="#">🏥 SmartCare Patient</a>
+            <div class="d-flex align-items-center">
+                <span class="me-3 fw-semibold text-secondary" id="userNameLabel">Welcome, Patient</span>
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="row gy-4">
+            <!-- Edit Profile Button (Visible when form is hidden) -->
+            <div class="col-lg-12 mb-4 text-end" id="editProfileBtnContainer" style="display: none;">
+                <button class="btn btn-outline-success rounded-pill px-4 shadow-sm" onclick="showProfileForm()">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </button>
+            </div>
+
+            <!-- Patient Profile -->
+            <div class="col-lg-12 mb-4" id="profileContainer">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-success text-white fw-bold">
+                        <i class="fas fa-user-circle me-2"></i>Patient Profile
+                    </div>
+                    <div class="card-body bg-light">
+                        <form id="profileForm">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label text-muted small fw-semibold">Age</label>
+                                    <input type="number" class="form-control" id="profileAge">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label text-muted small fw-semibold">Phone</label>
+                                    <input type="text" class="form-control" id="profilePhone">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label text-muted small fw-semibold">Gender</label>
+                                    <select class="form-select" id="profileGender">
+                                        <option value="">Select</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label text-muted small fw-semibold">Blood Group</label>
+                                    <input type="text" class="form-control" id="profileBloodGroup">
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label text-muted small fw-semibold">Address</label>
+                                    <input type="text" class="form-control" id="profileAddress">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted small fw-semibold">Medical History</label>
+                                    <textarea class="form-control" id="profileMedicalHistory" rows="2"></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted small fw-semibold">Allergies</label>
+                                    <textarea class="form-control" id="profileAllergies" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <div class="text-end mt-3">
+                                <button type="submit" class="btn btn-success py-2 px-5 rounded-pill shadow-sm">
+                                    <i class="fas fa-save me-2"></i>Save Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book Appointment -->
+            <div class="col-lg-5 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white fw-bold">
+                        <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                    </div>
+                    <div class="card-body">
+                        <form id="bookForm">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-semibold">Select Doctor</label>
+                                <select class="form-select" id="doctorSelect" required>
+                                    <option value="" disabled selected>Loading doctors...</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-muted small fw-semibold">Select Date</label>
+                                <input type="date" class="form-control" id="appointmentDate" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-2">Confirm Booking</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Queue Info & Past Appointments -->
+            <div class="col-lg-7">
+                <div class="card mb-4" id="liveQueueCard" style="display:none;">
+                    <div class="card-body text-center py-5 bg-white rounded-3 shadow-sm border border-primary">
+                        <h4 class="text-primary mb-3">Your Upcoming Appointment</h4>
+                        <div class="display-1 fw-bold text-dark mb-2" id="tokenDisplay">--</div>
+                        <p class="text-muted fw-semibold">Token Number</p>
+                        
+                        <div class="mt-4 p-3 bg-light rounded text-dark">
+                            <span class="h5 fw-bold text-danger">⏳ Estimated Wait: <span id="waitDisplay">--</span> mins</span>
+                            <br><small class="text-muted">(Based on 5 mins/patient)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-secondary text-white fw-bold">
+                        <i class="fas fa-history me-2"></i>My Appointments & History
+                    </div>
+                    <ul class="list-group list-group-flush" id="appointmentsList">
+                        <!-- Filled by JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../login.html';
+        }
+        
+        // Pseudo JS for now
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if(!user || user.role !== 'patient') { window.location.href = '../login.html'; return; }
+            document.getElementById('userNameLabel').innerText = `Welcome, ${user.name}`;
+            
+            // Set min date to today
+            document.getElementById('appointmentDate').min = new Date().toISOString().split("T")[0];
+
+            fetch('http://localhost:5000/api/admin/doctors')
+                .then(res => res.json())
+                .then(data => {
+                    const sel = document.getElementById('doctorSelect');
+                    sel.innerHTML = '<option value="" disabled selected>Choose Doctor</option>';
+                    data.forEach(d => {
+                        sel.innerHTML += `<option value="${d._id}">${d.name} (${d.specialization})</option>`;
+                    });
+                });
+            
+            loadAppointments();
+            loadProfile();
+        });
+
+        function loadProfile() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const token = localStorage.getItem('token');
+            if(user) {
+                document.getElementById('profileAge').value = user.age || '';
+                document.getElementById('profilePhone').value = user.phone || '';
+                document.getElementById('profileGender').value = user.gender || '';
+                document.getElementById('profileBloodGroup').value = user.bloodGroup || '';
+                document.getElementById('profileAddress').value = user.address || '';
+                document.getElementById('profileMedicalHistory').value = user.medicalHistory || '';
+                document.getElementById('profileAllergies').value = user.allergies || '';
+
+                // If profile is already filled out, hide the form initially
+                if(user.age && user.phone && user.gender) {
+                    hideProfileForm();
+                }
+            }
+        }
+
+        function hideProfileForm() {
+            document.getElementById('profileContainer').style.display = 'none';
+            document.getElementById('editProfileBtnContainer').style.display = 'block';
+        }
+
+        function showProfileForm() {
+            document.getElementById('profileContainer').style.display = 'block';
+            document.getElementById('editProfileBtnContainer').style.display = 'none';
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            const data = {
+                age: document.getElementById('profileAge').value,
+                phone: document.getElementById('profilePhone').value,
+                gender: document.getElementById('profileGender').value,
+                bloodGroup: document.getElementById('profileBloodGroup').value,
+                address: document.getElementById('profileAddress').value,
+                medicalHistory: document.getElementById('profileMedicalHistory').value,
+                allergies: document.getElementById('profileAllergies').value
+            };
+
+            fetch('http://localhost:5000/api/patient/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            }).then(r => r.json()).then(res => {
+                if(res._id) {
+                    alert('Profile updated successfully!');
+                    localStorage.setItem('user', JSON.stringify(res));
+                    hideProfileForm();
+                } else {
+                    alert('Failed to update profile');
+                }
+            });
+        });
+
+        document.getElementById('bookForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            const data = {
+                doctorId: document.getElementById('doctorSelect').value,
+                date: document.getElementById('appointmentDate').value
+            };
+            
+            fetch('http://localhost:5000/api/appointments/book', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            }).then(r => r.json()).then(res => {
+                alert(`Appointment Booked! Token: ${res.tokenNumber}`);
+                loadAppointments();
+            });
+        });
+
+        function loadAppointments() {
+            const token = localStorage.getItem('token');
+            fetch('http://localhost:5000/api/appointments/my', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json()).then(res => {
+                const list = document.getElementById('appointmentsList');
+                list.innerHTML = '';
+                if(res.length > 0) {
+                    const latest = res[res.length-1];
+                    if(latest.status === 'pending') {
+                        document.getElementById('liveQueueCard').style.display = 'block';
+                        document.getElementById('tokenDisplay').innerText = latest.tokenNumber;
+                        document.getElementById('waitDisplay').innerText = latest.tokenNumber * 5;
+                    }
+                }
+                res.forEach(app => {
+                    list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>${app.doctorId.name}</strong><br>
+                            <small class="text-muted">${app.date} | Token: ${app.tokenNumber}</small>
+                        </div>
+                        <span class="badge ${app.status === 'pending' ? 'bg-warning text-dark' : 'bg-success'} rounded-pill">${app.status}</span>
+                    </li>`;
+                });
+            });
+        }
+    </script>
+</body>
+</html>

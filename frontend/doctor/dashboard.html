@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - SmartCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/doctor-dashboard.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="doctor-navbar">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex align-items-center">
+                    <span class="doctor-navbar-brand">
+                        <i class="fas fa-stethoscope"></i>
+                        Doctor Portal
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="navbar-welcome" id="userNameLabel">Welcome, Dr. </div>
+                    <div class="navbar-time" id="currentTime">--:--</div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Page Title -->
+        <div class="page-title">
+            <i class="fas fa-heartbeat"></i>
+            Doctor Dashboard
+        </div>
+
+        <!-- Quick Stats Row -->
+        <div class="row mb-4">
+            <!-- Patients Seen Today -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <div class="stat-card stat-card-blue">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-value" id="patientsSeenToday">0</div>
+                    <div class="stat-label">Patients Seen</div>
+                    <div class="stat-subtitle">Today</div>
+                </div>
+            </div>
+
+            <!-- Pending Appointments -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <div class="stat-card stat-card-warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value" id="pendingAppointments">0</div>
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-subtitle">Appointments</div>
+                </div>
+            </div>
+
+            <!-- Reports Written -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <div class="stat-card stat-card-green">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div class="stat-value" id="reportsWritten">0</div>
+                    <div class="stat-label">Reports</div>
+                    <div class="stat-subtitle">Written Today</div>
+                </div>
+            </div>
+
+            <!-- Total Patients -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <div class="stat-card stat-card-purple">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value" id="totalPatients">0</div>
+                    <div class="stat-label">My Patients</div>
+                    <div class="stat-subtitle">Registered</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Queue Section -->
+        <div class="queue-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-list-ol"></i>
+                    Today's Patient Queue
+                </h3>
+                <input type="date" id="queueDate" class="date-picker" onchange="loadQueue()">
+            </div>
+
+            <div class="table-responsive">
+                <table class="queue-table table">
+                    <thead>
+                        <tr>
+                            <th>Token</th>
+                            <th>Patient Name</th>
+                            <th>Age</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queueTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i> Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- AI Diagnosis Section Removed -->
+
+        <!-- Footer -->
+        <div class="dashboard-footer">
+            <p class="mb-0">
+                <i class="fas fa-shield-alt me-2"></i>
+                SmartCare Hospital Management System v1.0
+                <i class="fas fa-check-circle text-success ms-2"></i> All systems operational
+            </p>
+        </div>
+    </div>
+
+
+    <!-- Prescription Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-medical me-2"></i>
+                        Write Prescription & Complete Checkup
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reportForm">
+                        <input type="hidden" id="currentAppointmentId">
+                        <input type="hidden" id="currentPatientName">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Patient Name</label>
+                                    <input type="text" class="form-control" id="patientNameDisplay" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Appointment Date</label>
+                                    <input type="text" class="form-control" id="appointmentDateDisplay" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-stethoscope me-2"></i>
+                                Diagnosis
+                            </label>
+                            <textarea class="form-control" id="diagnosis" rows="3" placeholder="Enter patient diagnosis..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-pills me-2"></i>
+                                Prescription (Medicines & Dosage)
+                            </label>
+                            <textarea class="form-control" id="prescription" rows="4" placeholder="Enter medicines with dosage and instructions..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-notes-medical me-2"></i>
+                                Additional Notes (Optional)
+                            </label>
+                            <textarea class="form-control" id="notes" rows="2" placeholder="Add any additional notes..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary py-2">
+                                <i class="fas fa-save me-2"></i>
+                                Save & Complete Checkup
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Info Modal -->
+    <div class="modal fade" id="patientInfoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user me-2"></i> Patient Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="patientInfoContent">
+                    <div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('currentTime').innerText = time;
+        }
+        setInterval(updateTime, 1000);
+
+        // Logout function
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../login.html';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if(!user || user.role !== 'doctor') {
+                window.location.href = '../login.html';
+                return;
+            }
+            
+            document.getElementById('userNameLabel').innerText = `Welcome, Dr. ${user.name}`;
+            document.getElementById('queueDate').value = new Date().toISOString().split("T")[0];
+            
+            updateTime();
+            loadQueue();
+            loadStats();
+        });
+
+        // Load queue data
+        function loadQueue() {
+            const token = localStorage.getItem('token');
+            const date = document.getElementById('queueDate').value;
+
+            fetch(`http://localhost:5000/api/doctor/queue?date=${date}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(res => {
+                const tbody = document.getElementById('queueTableBody');
+                tbody.innerHTML = '';
+
+                if(res.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="empty-state-text">No appointments for this date</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                res.forEach((app, index) => {
+                    const statusClass = app.status === 'completed' 
+                        ? 'status-completed' 
+                        : 'status-pending';
+                    const statusText = app.status === 'completed' ? 'COMPLETED' : 'PENDING';
+                    
+                    let actionBtn = `<button class="btn btn-sm btn-info text-white me-2" onclick="viewPatientInfo('${app.patientId._id}')">
+                            <i class="fas fa-eye"></i> Info
+                        </button>`;
+                    actionBtn += app.status === 'pending' 
+                        ? `<button class="action-btn" onclick="openReportModal('${app._id}', '${app.patientId.name}', '${app.date}')">
+                            <i class="fas fa-check-circle me-1"></i> Complete Checkup
+                        </button>`
+                        : `<span class="status-completed">
+                            <i class="fas fa-check me-1"></i> Completed
+                        </span>`;
+
+                    const phone = app.patientId.phone || 'N/A';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <span class="token-badge">${app.tokenNumber}</span>
+                            </td>
+                            <td class="patient-name">${app.patientId.name}</td>
+                            <td>${app.patientId.age || 'N/A'}</td>
+                            <td>${phone}</td>
+                            <td>
+                                <span class="${statusClass}">
+                                    <i class="fas ${app.status === 'completed' ? 'fa-check-circle' : 'fa-clock'}"></i>
+                                    ${statusText}
+                                </span>
+                            </td>
+                            <td>${actionBtn}</td>
+                        </tr>
+                    `;
+                });
+
+                updateStats(res);
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                document.getElementById('queueTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i> Failed to load queue
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Load statistics
+        function loadStats() {
+            const token = localStorage.getItem('token');
+            
+            fetch(`http://localhost:5000/api/doctor/queue?date=${new Date().toISOString().split("T")[0]}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(res => {
+                updateStats(res);
+            });
+        }
+
+        // Update statistics
+        function updateStats(appointments) {
+            const completed = appointments.filter(a => a.status === 'completed').length;
+            const pending = appointments.filter(a => a.status === 'pending').length;
+            
+            document.getElementById('patientsSeenToday').innerText = completed;
+            document.getElementById('pendingAppointments').innerText = pending;
+            document.getElementById('reportsWritten').innerText = completed;
+            document.getElementById('totalPatients').innerText = appointments.length;
+        }
+
+        // Open prescription modal
+        function openReportModal(appId, patientName, appointmentDate) {
+            document.getElementById('currentAppointmentId').value = appId;
+            document.getElementById('currentPatientName').value = patientName;
+            document.getElementById('patientNameDisplay').value = patientName;
+            document.getElementById('appointmentDateDisplay').value = new Date(appointmentDate).toLocaleDateString();
+            
+            var myModal = new bootstrap.Modal(document.getElementById('reportModal'));
+            myModal.show();
+        }
+
+        // Submit prescription
+        document.getElementById('reportForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            const data = {
+                appointmentId: document.getElementById('currentAppointmentId').value,
+                diagnosis: document.getElementById('diagnosis').value,
+                prescription: document.getElementById('prescription').value
+            };
+
+            fetch('http://localhost:5000/api/doctor/report', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(res => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+                modal.hide();
+                
+                // Clear form
+                document.getElementById('reportForm').reset();
+                
+                // Reload queue
+                loadQueue();
+                
+                // Show success message
+                alert('✓ Prescription saved successfully!');
+            })
+            .catch(err => {
+                alert('Error: Could not save prescription');
+                console.error('Error:', err);
+            });
+        });
+
+        // View Patient Info Function
+        function viewPatientInfo(patientId) {
+            const token = localStorage.getItem('token');
+            const myModal = new bootstrap.Modal(document.getElementById('patientInfoModal'));
+            document.getElementById('patientInfoContent').innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+            myModal.show();
+
+            fetch(`http://localhost:5000/api/patient/profile/${patientId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.name) {
+                    document.getElementById('patientInfoContent').innerHTML = `
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Name:</strong> ${res.name}</li>
+                            <li class="list-group-item"><strong>Email:</strong> ${res.email}</li>
+                            <li class="list-group-item"><strong>Age:</strong> ${res.age || 'N/A'}</li>
+                            <li class="list-group-item"><strong>Gender:</strong> ${res.gender || 'N/A'}</li>
+                            <li class="list-group-item"><strong>Blood Group:</strong> ${res.bloodGroup || 'N/A'}</li>
+                            <li class="list-group-item"><strong>Phone:</strong> ${res.phone || 'N/A'}</li>
+                            <li class="list-group-item"><strong>Address:</strong> ${res.address || 'N/A'}</li>
+                            <li class="list-group-item"><strong>Medical History:</strong> ${res.medicalHistory || 'N/A'}</li>
+                            <li class="list-group-item"><strong>Allergies:</strong> ${res.allergies || 'N/A'}</li>
+                        </ul>
+                    `;
+                } else {
+                    document.getElementById('patientInfoContent').innerHTML = '<div class="text-danger">Failed to load patient info.</div>';
+                }
+            })
+            .catch(err => {
+                document.getElementById('patientInfoContent').innerHTML = '<div class="text-danger">Error loading data.</div>';
+            });
+        }
+    </script>
+</body>
+</html>

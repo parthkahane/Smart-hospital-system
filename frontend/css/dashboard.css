@@ -1,0 +1,205 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+    min-height: 100vh;
+    padding-top: 100px;
+}
+
+.main-content {
+    padding-bottom: 3rem;
+}
+
+/* Navbar Styles */
+.dashboard-nav {
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1rem 0;
+}
+
+.dashboard-nav .container-fluid {
+    gap: 1rem;
+}
+
+.dashboard-brand {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #667eea !important;
+    letter-spacing: 0.5px;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    font-weight: 600;
+    padding: 1.25rem 1.5rem;
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+}
+
+.card-body {
+    background-color: #f8fafc;
+}
+
+.card.bg-light .card-body,
+.card.bg-white .card-body {
+    background-color: transparent;
+}
+
+.stat-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    color: #0056b3;
+    background: rgba(0, 86, 179, 0.1);
+    padding: 15px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* List Group */
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 1rem 1.25rem;
+    transition: background-color 0.2s;
+}
+
+.list-group-item .badge {
+    min-width: 90px;
+    text-align: center;
+}
+
+.card .form-label {
+    margin-bottom: 0.5rem;
+}
+
+.card .form-control,
+.card .form-select,
+.card .form-control:focus,
+.card textarea {
+    min-height: 48px;
+    border-radius: 0.75rem;
+}
+
+.card .form-control,
+.card .form-select,
+.card textarea {
+    background-color: #ffffff;
+}
+
+.card .text-end {
+    text-align: end !important;
+}
+
+@media (max-width: 991px) {
+    body {
+        padding-top: 120px;
+    }
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+@keyframes fadeInCard {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.main-content,
+.card,
+.btn-logout,
+#liveQueueCard {
+    animation: fadeInCard 0.6s ease both;
+}
+
+.card {
+    transform: translateY(0);
+}
+
+.queue-section .card,
+#liveQueueCard {
+    animation-delay: 0.1s;
+}
+
+.queue-section .card:hover,
+.btn-logout:hover,
+.btn-outline-success:hover,
+.btn-primary:hover {
+    transform: translateY(-3px);
+}
+
+/* Table Styles */
+.table th {
+    font-weight: 600;
+    color: #6c757d;
+    border-bottom: 2px solid #eaedf1;
+    background-color: #f8f9fa;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Badge Styles */
+.badge-pending {
+    background-color: #ffeeba;
+    color: #856404;
+}
+
+.badge-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Button Styles */
+.btn-logout {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-brand {
+        font-size: 1.1rem;
+    }
+
+    body {
+        padding-top: 70px;
+    }
+}
